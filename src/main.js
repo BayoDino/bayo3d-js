@@ -54,6 +54,29 @@ Bayo3D.mousemovemethod = function (e) {
          	if (Bayo3D.mouseClicked){Bayo3D.rotate.x += Bayo3D.rotateYDirection;}
         Bayo3D.oldy = e.pageY;
 }
+	Bayo3D.touchmovemethod = function (e) {
+
+        if (e[0].pageX < Bayo3D.oldx) {
+            Bayo3D.rotateXDirection  = -2
+        } else if (e[0].pageX > Bayo3D.oldx) {
+            Bayo3D.rotateXDirection  = 2
+        } else if (e[0].pageX == Bayo3D.oldx) {
+            Bayo3D.rotateXDirection  = 0
+        }
+
+         	if (Bayo3D.mouseClicked){Bayo3D.rotate.y += Bayo3D.rotateXDirection;}
+        Bayo3D.oldx = e[0].pageX;
+		        if (e[0].pageY < Bayo3D.oldy) {
+            Bayo3D.rotateYDirection  = -2
+        } else if (e[0].pageY > Bayo3D.oldy) {
+            Bayo3D.rotateYDirection  = 2
+        } else if (e[0].pageY == Bayo3D.oldy) {
+            Bayo3D.rotateYDirection  = 0
+        }
+
+         	if (Bayo3D.mouseClicked){Bayo3D.rotate.x += Bayo3D.rotateYDirection;}
+        Bayo3D.oldy = e[0].pageY;
+}
 Bayo3D.getRotationPoses=(x,y,rotation)=>{
 	//first with Pythagoras we're getting langth of the chord
     var chord = Math.sqrt(x*x+y*y);	
@@ -195,16 +218,12 @@ var Vector3 = function(json){
     Vector3.prototype.draw = function(){
 		//z point is used for setting up currect z point
 		this.point.z = Math.max(...this.path.map(o => o.z)) * Math.cos((this.rotate.y+Bayo3D.rotate.y)*Bayo3D.radiun);
-		//console.log(Math.max(...this.path.map(o => o.z)) * Math.cos(this.rotate.y*Bayo3D.radiun));
         ctx.beginPath();
         ctx.moveTo(this.x,this.y);
         this.path.forEach((a,b)=>{
-          //a.pointX = a.x * Math.cos(this.rotate.y*Bayo3D.radiun)  /*rotation for Y over or under 0*/ ;
-		  //looking to calculate z movement
-		  a.pointX = a.x * Math.cos((this.rotate.y+Bayo3D.rotate.y) * Bayo3D.radiun) + a.z * Math.sin((this.rotate.y+Bayo3D.rotate.y) * Bayo3D.radiun) + this.translate.z * Math.sin(this.rotate.y * Bayo3D.radiun);
-		  a.pointY = a.y * Math.cos((this.rotate.x+Bayo3D.rotate.x) * Bayo3D.radiun) + a.z * Math.sin((this.rotate.x+Bayo3D.rotate.x) * Bayo3D.radiun) + this.translate.z * Math.sin(this.rotate.x * Bayo3D.radiun);
-		  //for z-sorting
-		  //a.pointZ = a.z * Math.sin(this.rotate.y * Bayo3D.radiun);
+		  a.pointX = Bayo3D.getRotationPoses(a.x,a.z,this.rotate.y + Bayo3D.rotate.y).x * Bayo3D.getRotationPoses(a.x,a.z,this.rotate.y + Bayo3D.rotate.y).chord;
+		  a.pointY = Bayo3D.getRotationPoses(a.x,a.z,this.rotate.y + Bayo3D.rotate.y).y * Bayo3D.getRotationPoses(a.x,a.z,this.rotate.y + Bayo3D.rotate.y).chord * Math.sin((this.rotate.x+Bayo3D.rotate.x) * Bayo3D.radiun)+
+		  a.y * Math.cos((this.rotate.x+Bayo3D.rotate.x) * Bayo3D.radiun);
           ctx.lineTo(
 		  this.translate.x + a.pointX,
 		  this.translate.y + a.pointY
@@ -543,7 +562,7 @@ return Box;
       return Bayo3D;
 });
 
-new Bayo3D.Box({
+/**new Bayo3D.Box({
 	  addTo: ctx,
 	  color: 'grey',
       translate:{
@@ -559,15 +578,71 @@ new Bayo3D.Box({
 	  width: 150,
 	  height: 100,
 	  depth: 50,
-});
-
+});*/
+vector.push(new Bayo3D.Vector3({
+	  addTo: ctx,
+	  color: 'black',
+      translate:{
+        x:250,
+        y:250,
+        z:0
+      },
+      rotate:{
+        x:0,
+        y:0,
+        z:0
+      },
+	  path:[
+    {x:5,y:-5,z:5},
+    {x:-5,y:-5,z:5},
+    {x:-5,y:5,z:5}
+	  ]
+}));
+vector.push(new Bayo3D.Vector3({
+	  addTo: ctx,
+	  color: 'grey',
+      translate:{
+        x:250,
+        y:250,
+        z:0
+      },
+      rotate:{
+        x:0,
+        y:0,
+        z:0
+      },
+	  path:[
+    {x:50,y:-50,z:50},
+    {x:-50,y:-50,z:50},
+    {x:-50,y:50,z:50}
+	  ]
+}));
+vector.push(new Bayo3D.Vector3({
+	  addTo: ctx,
+	  color: 'red',
+      translate:{
+        x:250,
+        y:250,
+        z:0
+      },
+      rotate:{
+        x:0,
+        y:0,
+        z:0
+      },
+	  path:[
+    {x:-50,y:-50,z:-50},
+    {x:50,y:-50,z:-50},
+    {x:50,y:50,z:-50}
+	  ]
+}));
 //runes[0]=new Runes(250,250,0,{x:0,y:0,z:0},'purple',[{x:50,y:50,z:0},{x:50,y:100,z:0}]);
 //runes[1]=new Runes(250,250,5,{x:180,y:0,z:0},'yellow',[{x:-100,y:0,z:0},{x:-100,y:100,z:0},{x:0,y:100,z:0}]);
 setInterval(()=>{
   ctx.clearRect(0,0,cans.width,cans.height);
   vector.forEach((a,b)=>{
 	  	//a.rotate.y+=1;
-	//a.rotate.y+=1;
+	a.rotate.y+=1;
 	a.draw();
   });
 
@@ -575,8 +650,13 @@ setInterval(()=>{
 	  return a.point.z - b.point.z;
   });
 },1000/60);
+//Bayo3D.rotate.x = 90;
+//Bayo3D.rotate.y = 90;
 //console.log(Bayo3D.Box.call());
 console.log(Object);
 document.addEventListener('mousemove', (e)=>Bayo3D.mousemovemethod(e));
 document.onmousedown = (e)=> Bayo3D.mouseClicked = 1;
 document.onmouseup = (e)=> Bayo3D.mouseClicked = 0;
+document.addEventListener('touchmove', (e)=>Bayo3D.touchmovemethod(e));
+document.ontouchstart = (e)=> Bayo3D.mouseClicked = 1;
+document.ontouchend = (e)=> Bayo3D.mouseClicked = 0;
