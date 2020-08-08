@@ -353,7 +353,7 @@ setInterval(()=>{
   ctx.clearRect(0,0,cans.width,cans.height);
   Bayo3D.Vector3.prototype.members.forEach((a,b)=>{
 	  	//a.rotate.y+=1;
-	a.rotate.x+=1;
+	a.rotate.y+=1;
 	a.draw();
   });
 
@@ -361,7 +361,6 @@ setInterval(()=>{
 	  return a.point.z - b.point.z;
   });
 },1000/60);
-Bayo3D.rotate.y = 90;
 //Bayo3D.rotate.x = 90;
 //Bayo3D.rotate.y = 90;
 //console.log(Bayo3D.Box.call());
