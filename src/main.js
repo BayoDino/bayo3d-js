@@ -5,6 +5,7 @@
 * All rights belongs to the Engineer 
 * http://bayodino.epizy.com/bayo3d
 */
+
 var vector = [];
 ( function( root, factory ) {
   // module definition
@@ -141,6 +142,7 @@ Bayo3D.easeInOut = function( alpha, power ) {
 return Bayo3D;
 
 }));
+
 //const cans = document.getElementById('scene');
 /*class Bayo3D{
 	constructor(){}
@@ -213,16 +215,21 @@ var Vector3 = function(json){
 		y: this.translate.y,
 		z: this.translate.z
 	}
+	Vector3.prototype.members.push(this);
 }
-
+    Vector3.prototype.members = [];
     Vector3.prototype.draw = function(){
 		//z point is used for setting up currect z point
-		this.point.z = Math.max(...this.path.map(o => o.z)) * Math.cos((this.rotate.y+Bayo3D.rotate.y)*Bayo3D.radiun);
+		this.point.z = Math.max(...this.path.map(o => o.z)) * Math.cos((this.rotate.y+Bayo3D.rotate.y)*Bayo3D.radiun) * Math.cos((this.rotate.x+Bayo3D.rotate.x)*Bayo3D.radiun);
         ctx.beginPath();
         ctx.moveTo(this.x,this.y);
         this.path.forEach((a,b)=>{
-		  a.pointX = Bayo3D.getRotationPoses(a.x,a.z,this.rotate.y + Bayo3D.rotate.y).x * Bayo3D.getRotationPoses(a.x,a.z,this.rotate.y + Bayo3D.rotate.y).chord;
-		  a.pointY = Bayo3D.getRotationPoses(a.x,a.z,this.rotate.y + Bayo3D.rotate.y).y * Bayo3D.getRotationPoses(a.x,a.z,this.rotate.y + Bayo3D.rotate.y).chord * Math.sin((this.rotate.x+Bayo3D.rotate.x) * Bayo3D.radiun)+
+			var x_y = (o)=>{return Bayo3D.getRotationPoses(a.x,a.y,this.rotate[o] + Bayo3D.rotate[o])};
+            var x_z = (o)=>{return Bayo3D.getRotationPoses(a.x,a.z,this.rotate[o] + Bayo3D.rotate[o])};
+            var z_y = (o)=>{return Bayo3D.getRotationPoses(a.z,a.y,this.rotate[o] + Bayo3D.rotate[o])};
+			
+		  a.pointX = x_z('y').x * x_z('y').chord;
+		  a.pointY = x_z('y').y * x_z('y').chord * Math.sin((this.rotate.x+Bayo3D.rotate.x) * Bayo3D.radiun)+
 		  a.y * Math.cos((this.rotate.x+Bayo3D.rotate.x) * Bayo3D.radiun);
           ctx.lineTo(
 		  this.translate.x + a.pointX,
@@ -242,302 +249,7 @@ var Vector3 = function(json){
 return Vector3;
 
 }));
-/*
- *Box
- */
-( function( root, factory ) {
-  // module definition
-  if ( typeof module == 'object' && module.exports ) {
-    // CommonJS
-    module.exports = factory();
-  } else {
-    // browser global
-    var Bayo3D = root.Bayo3D;
-    Bayo3D.Box = factory( Bayo3D );
-  }
 
-}( this, function factory( utils ) {
-var Box = function(json){
-    this.props = {
-      addTo: ctx,
-	  color: 'grey',
-      translate:{
-        x:250,
-        y:250,
-        z:0
-      },
-      rotate:{
-        x:0,
-        y:0,
-        z:0
-      },
-	  width: 10,
-	  height: 10,
-	  depth: 10,
-    }
-    Object.entries(this.props).forEach(a => {
-      const [b, c] = a;
-      if (c === Object(c) && b !== 'path'){
-        Object.entries(c).forEach(d => {
-          const [e, f] = d;
-          this.props[b][e] = typeof json[b][e] !== 'undefined' ? json[b][e] : this.props[b][e];
-        });
-      }else{
-      this.props[b] = typeof json[b] !== 'undefined' ? json[b] : this.props[b];
-      }
-    });
-    Object.entries(this.props).forEach(a => {
-      const [b, c] = a;
-      this[b] = c;
-    });;
-
-
-    //Box.prototype.draw = function(){
-        //every side requires 2 vector3s (triangles)
-        // so 12 vectors totally
-		
-		//1
-vector.push(new Bayo3D.Vector3({
-  addTo: ctx,
-  translate:{
-    x:this.translate.x,
-    y:this.translate.y,
-    z:this.translate.z
-  },
-  color: this.color,
-  rotate:{
-    x:0,
-    y:0,
-    z:0
-  },
-  path:[
-    {x:-this.width/2,y:-this.height/2,z:this.depth/2+1},
-    {x:this.width/2,y:-this.height/2,z:this.depth/2+1},
-    {x:-this.width/2,y:this.height/2,z:this.depth/2+1}
-  ]
-}));
-vector.push(new Bayo3D.Vector3({
-  addTo: ctx,
-  translate:{
-    x:this.translate.x,
-    y:this.translate.y,
-    z:this.translate.z
-  },
-  color: this.color,
-  rotate:{
-    x:0,
-    y:0,
-    z:0
-  },
-  path:[
-    {x:this.width/2,y:-this.height/2,z:this.depth/2+1},
-    {x:-this.width/2,y:this.height/2,z:this.depth/2+1},
-    {x:this.width/2,y:this.height/2,z:this.depth/2+1}
-  ]
-}));
-//2
-vector.push(new Bayo3D.Vector3({
-  addTo: ctx,
-  translate:{
-    x:this.translate.x,
-    y:this.translate.y,
-    z:this.translate.z
-  },
-  color: 'blue',
-  rotate:{
-    x:0,
-    y:0,
-    z:0
-  },
-  path:[
-    {x:-this.width/2,y:-this.height/2,z:-this.depth/2-1},
-    {x:this.width/2,y:-this.height/2,z:-this.depth/2-1},
-    {x:-this.width/2,y:this.height/2,z:-this.depth/2-1}
-  ]
-}));
-vector.push(new Bayo3D.Vector3({
-  addTo: ctx,
-  translate:{
-    x:this.translate.x,
-    y:this.translate.y,
-    z:this.translate.z
-  },
-  color: 'blue',
-  rotate:{
-    x:0,
-    y:0,
-    z:0
-  },
-  path:[
-    {x:this.width/2,y:-this.height/2,z:-this.depth/2-1},
-    {x:-this.width/2,y:this.height/2,z:-this.depth/2-1},
-    {x:this.width/2,y:this.height/2,z:-this.depth/2-1}
-  ]
-}));
-		//3
-vector.push(new Bayo3D.Vector3({
-  addTo: ctx,
-  translate:{
-    x:this.translate.x,
-    y:this.translate.y,
-    z:this.translate.z
-  },
-  color: 'red',
-  rotate:{
-    x:0,
-    y:0,
-    z:0
-  },
-  path:[
-    {x:-this.width/2,y:-this.height/2,z:-this.depth/2},
-    {x:-this.width/2,y:-this.height/2,z:this.depth/2},
-    {x:-this.width/2,y:this.height/2,z:this.depth/2}
-  ]
-}));
-vector.push(new Bayo3D.Vector3({
-  addTo: ctx,
-  translate:{
-    x:this.translate.x,
-    y:this.translate.y,
-    z:this.translate.z
-  },
-  color: 'red',
-  rotate:{
-    x:0,
-    y:0,
-    z:0
-  },
-  path:[
-    {x:-this.width/2,y:this.height/2,z:this.depth/2},
-    {x:-this.width/2,y:-this.height/2,z:-this.depth/2},
-    {x:-this.width/2,y:this.height/2,z:-this.depth/2}
-  ]
-}));
-		//4
-vector.push(new Bayo3D.Vector3({
-  addTo: ctx,
-  translate:{
-    x:this.translate.x,
-    y:this.translate.y,
-    z:this.translate.z
-  },
-  color: 'red',
-  rotate:{
-    x:0,
-    y:0,
-    z:0
-  },
-  path:[
-    {x:this.width/2,y:-this.height/2,z:-this.depth/2},
-    {x:this.width/2,y:-this.height/2,z:this.depth/2},
-    {x:this.width/2,y:this.height/2,z:this.depth/2}
-  ]
-}));
-vector.push(new Bayo3D.Vector3({
-  addTo: ctx,
-  translate:{
-    x:this.translate.x,
-    y:this.translate.y,
-    z:this.translate.z
-  },
-  color: 'green',
-  rotate:{
-    x:0,
-    y:0,
-    z:0
-  },
-  path:[
-    {x:this.width/2,y:this.height/2,z:this.depth/2},
-    {x:this.width/2,y:-this.height/2,z:-this.depth/2},
-    {x:this.width/2,y:this.height/2,z:-this.depth/2}
-  ]
-}));
-//top sides and done!~
-		//5
-/*vector.push(new Bayo3D.Vector3({
-  addTo: ctx,
-  translate:{
-    x:this.translate.x,
-    y:this.translate.y,
-    z:this.translate.z
-  },
-  color: 'blue',
-  rotate:{
-    x:0,
-    y:0,
-    z:0
-  },
-  path:[
-    {x:this.width/2,y:-this.height/2,z:-this.depth/2},
-    {x:-this.width/2,y:-this.height/2,z:this.depth/2},
-    {x:this.width/2,y:-this.height/2,z:this.depth/2}
-  ]
-}));
-vector.push(new Bayo3D.Vector3({
-  addTo: ctx,
-  translate:{
-    x:this.translate.x,
-    y:this.translate.y,
-    z:this.translate.z
-  },
-  color: 'blue',
-  rotate:{
-    x:0,
-    y:0,
-    z:0
-  },
-  path:[
-    {x:-this.width/2,y:-this.height/2,z:-this.depth/2},
-    {x:-this.width/2,y:-this.height/2,z:this.depth/2},
-    {x:this.width/2,y:-this.height/2,z:-this.depth/2}
-  ]
-}));*/
-		//5
-/*vector.push(new Bayo3D.Vector3({
-  addTo: ctx,
-  translate:{
-    x:this.translate.x,
-    y:this.translate.y,
-    z:this.translate.z
-  },
-  color: 'green',
-  rotate:{
-    x:0,
-    y:0,
-    z:0
-  },
-  path:[
-    {x:this.width/2,y:this.height/2,z:-this.depth/2},
-    {x:-this.width/2,y:this.height/2,z:this.depth/2},
-    {x:this.width/2,y:this.height/2,z:this.depth/2}
-  ]
-}));
-vector.push(new Bayo3D.Vector3({
-  addTo: ctx,
-  translate:{
-    x:this.translate.x,
-    y:this.translate.y,
-    z:this.translate.z
-  },
-  color: 'green',
-  rotate:{
-    x:0,
-    y:0,
-    z:0
-  },
-  path:[
-    {x:-this.width/2,y:this.height/2,z:-this.depth/2},
-    {x:-this.width/2,y:this.height/2,z:this.depth/2},
-    {x:this.width/2,y:this.height/2,z:-this.depth/2}
-  ]
-}));*/
-//other side 
-
-	} 
-
-return Box;
-
-}));
 /**
  * Index
  */
@@ -548,16 +260,14 @@ return Box;
     // CommonJS
     module.exports = factory(
         require('./vector3'),
-		require('./box'),
     );
   } else if ( typeof define == 'function' && define.amd ) {
     /* globals define */ // AMD
     define( 'bayo3d', [], root.Bayo3D );
   }
-})( this, function factory( Vector3,Box ) {
+})( this, function factory( Vector3 ) {
 
       Bayo3D.Vector3 = Vector3;
-      Bayo3D.Box = Box;
 
       return Bayo3D;
 });
@@ -579,7 +289,7 @@ return Box;
 	  height: 100,
 	  depth: 50,
 });*/
-vector.push(new Bayo3D.Vector3({
+new Bayo3D.Vector3({
 	  addTo: ctx,
 	  color: 'black',
       translate:{
@@ -597,8 +307,8 @@ vector.push(new Bayo3D.Vector3({
     {x:-5,y:-5,z:5},
     {x:-5,y:5,z:5}
 	  ]
-}));
-vector.push(new Bayo3D.Vector3({
+});
+new Bayo3D.Vector3({
 	  addTo: ctx,
 	  color: 'grey',
       translate:{
@@ -616,8 +326,8 @@ vector.push(new Bayo3D.Vector3({
     {x:-50,y:-50,z:50},
     {x:-50,y:50,z:50}
 	  ]
-}));
-vector.push(new Bayo3D.Vector3({
+});
+var vec = new Bayo3D.Vector3({
 	  addTo: ctx,
 	  color: 'red',
       translate:{
@@ -635,21 +345,23 @@ vector.push(new Bayo3D.Vector3({
     {x:50,y:-50,z:-50},
     {x:50,y:50,z:-50}
 	  ]
-}));
+});
+vec.color = 'green';
 //runes[0]=new Runes(250,250,0,{x:0,y:0,z:0},'purple',[{x:50,y:50,z:0},{x:50,y:100,z:0}]);
 //runes[1]=new Runes(250,250,5,{x:180,y:0,z:0},'yellow',[{x:-100,y:0,z:0},{x:-100,y:100,z:0},{x:0,y:100,z:0}]);
 setInterval(()=>{
   ctx.clearRect(0,0,cans.width,cans.height);
-  vector.forEach((a,b)=>{
+  Bayo3D.Vector3.prototype.members.forEach((a,b)=>{
 	  	//a.rotate.y+=1;
-	a.rotate.y+=1;
+	a.rotate.x+=1;
 	a.draw();
   });
 
-  vector.sort((a,b)=>{
+  Bayo3D.Vector3.prototype.members.sort((a,b)=>{
 	  return a.point.z - b.point.z;
   });
 },1000/60);
+Bayo3D.rotate.y = 90;
 //Bayo3D.rotate.x = 90;
 //Bayo3D.rotate.y = 90;
 //console.log(Bayo3D.Box.call());
@@ -660,3 +372,4 @@ document.onmouseup = (e)=> Bayo3D.mouseClicked = 0;
 document.addEventListener('touchmove', (e)=>Bayo3D.touchmovemethod(e));
 document.ontouchstart = (e)=> Bayo3D.mouseClicked = 1;
 document.ontouchend = (e)=> Bayo3D.mouseClicked = 0;
+
